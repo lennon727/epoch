@@ -68,6 +68,12 @@ request_params('GetTop') ->
     [
     ];
 
+request_params('GetTx') ->
+    [
+        'tx_hash',
+        'tx_encoding'
+    ];
+
 request_params('GetTxs') ->
     [
     ];
@@ -444,6 +450,25 @@ request_param_info('GetName', 'name') ->
         rules => [
             {type, 'binary'},
             required
+        ]
+    };
+
+request_param_info('GetTx', 'tx_hash') ->
+    #{
+        source =>  binding ,
+        rules => [
+            {type, 'binary'},
+            required
+        ]
+    };
+
+request_param_info('GetTx', 'tx_encoding') ->
+    #{
+        source => qs_val  ,
+        rules => [
+            {type, 'binary'},
+            {enum, ['message_pack', 'json'] },
+            not_required
         ]
     };
 
@@ -1250,6 +1275,13 @@ validate_response('GetName', 404, Body, ValidatorState) ->
 
 validate_response('GetTop', 200, Body, ValidatorState) ->
     validate_response_body('Top', 'Top', Body, ValidatorState);
+
+validate_response('GetTx', 200, Body, ValidatorState) ->
+    validate_response_body('SingleTxObject', 'SingleTxObject', Body, ValidatorState);
+validate_response('GetTx', 400, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+validate_response('GetTx', 404, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
 
 validate_response('GetTxs', 200, Body, ValidatorState) ->
     validate_response_body('Transactions', 'Transactions', Body, ValidatorState);
